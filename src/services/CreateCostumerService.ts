@@ -8,7 +8,7 @@ class CreateCostumerService {
     this.costumersRepository = costumersRepository;
   }
 
-  public async execute({ name, cpf, telefone }: Omit<Costumers, '_id'>): Promise<Costumers> {
+  public async execute({ name, cpf, telefone }: Omit<Costumers, '_id'>): Promise<unknown> {
     if (name === undefined || telefone === undefined) {
       throw new Error('Nome e telefone são obrigatórios.');
     }

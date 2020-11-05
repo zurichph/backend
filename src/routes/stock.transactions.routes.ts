@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import StockTransactionsRepository from '../repositories/StockTransactionsRepository';
+import CreateStockTransactionService from '../services/CreateStockTransactionService';
 
 const stockTransactionsRouter = Router();
 const stockTransactionsRepository = new StockTransactionsRepository();
@@ -10,7 +11,9 @@ stockTransactionsRouter.post('/', async (req, res) => {
       productId, quantity, type, stockId,
     } = req.body;
 
-    const transaction = await stockTransactionsRepository.create({
+    const createTransactionService = new CreateStockTransactionService(stockTransactionsRepository);
+
+    const transaction = await createTransactionService.execute({
       productId, quantity, type, stockId,
     });
 
