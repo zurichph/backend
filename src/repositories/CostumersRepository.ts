@@ -1,0 +1,70 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import Costumers from '../models/Costumers';
+import Costumer from '../schemas/Costumer';
+
+interface UpdateCostumer {
+  clientId: string;
+  name: string;
+  cpf: string;
+  telefone: string;
+}
+
+class CostumersRepository {
+  public async create({ name, cpf, telefone }: Costumers): Promise<unknown> {
+    const costumer = new Costumers({ name, cpf, telefone });
+
+    const CostumerExists = await Costumer.findOne({ telefone });
+    if (CostumerExists) {
+      throw new Error('Este telefone já esta sendo utilizado por um outro cliente.');
+    }
+
+    try {
+      return await new Costumer(costumer).save();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async update({
+    clientId, name, cpf, telefone,
+  }: UpdateCostumer): Promise<any> {
+    const TelefoneExists = await Costumer.findOne({ telefone });
+    if (TelefoneExists && TelefoneExists.toObject()._id !== clientId) {
+      throw new Error('Este telefone já esta sendo utilizado por um outro cliente.');
+    }
+
+    const costumerBeforeUpdate = await Costumer.findById(clientId);
+
+    try {
+      return await Costumer.findOneAndUpdate({ _id: clientId }, {
+        $set: {
+          name: name || costumerBeforeUpdate?.toObject().name,
+          cpf: cpf || costumerBeforeUpdate?.toObject().cpf,
+          telefone: telefone || costumerBeforeUpdate?.toObject().telefone,
+        },
+      }, { new: true });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async delete(id: string): Promise<boolean> {
+    const exists = await Costumer.findById(id);
+    if (!exists) {
+      throw new Error('Este cliente não existe.');
+    }
+
+    await Costumer.deleteOne({ _id: id });
+
+    return true;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  public async all(page: any): Promise<unknown> {
+    const costumers = await Costumer.find({}).limit(25).skip(page * 25);
+
+    return costumers;
+  }
+}
+
+export default CostumersRepository;
