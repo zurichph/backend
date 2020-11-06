@@ -1,8 +1,11 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import options from './config';
 import routes from './routes';
 
-mongoose.connect('mongodb+srv://f2kjfnkjas:X1UErDqFywXwThin@zuri.lx3hy.mongodb.net/tests?retryWrites=true&w=majority', {
+const { dbUrl } = options;
+
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
