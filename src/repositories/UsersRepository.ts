@@ -4,7 +4,7 @@ import Users from '../models/Users';
 import User from '../schemas/User';
 import options from '../config';
 
-const {jwtSecret} = options;
+const { jwtSecret } = options;
 
 class UsersRepository {
   public async create({ username, password }: Users): Promise<Users> {
