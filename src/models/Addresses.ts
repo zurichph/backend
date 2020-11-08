@@ -1,71 +1,81 @@
 type fixedSizeArray<N extends number, T, M extends string = '0'> = {
   readonly [k in M]: string;
 } & { length: N } & ReadonlyArray<T>;
-const isNameArray = (x: string | fixedSizeArray<2, string>): x is fixedSizeArray<2, string> => true;
+
+type nameArray = fixedSizeArray<2, string>;
+type nameType = string | nameArray;
+
+const isNameArray = (x: nameType): x is nameArray => true;
 
 class Addresses {
-  readonly states: Array<string> = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'] // eslint-disable-line indent
+  // eslint-disable-next-line
+  private readonly states: Array<string> = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'] // eslint-disable-line indent
 
-  readonly maxNameSize: number = 42;
+  private readonly maxNameSize: number = 42;
 
-  readonly maxPhoneSize: number = 12;
+  private readonly maxPhoneSize: number = 12;
 
-  readonly maxStreetNameSize: number = 33;
+  private readonly maxStreetNameSize: number = 33;
 
-  readonly maxStreetNumber: number = 99999999;
+  private readonly maxStreetNumber: number = 99999999;
 
-  readonly maxNeighborhoodSize: number = 42;
+  private readonly maxNeighborhoodSize: number = 42;
 
-  readonly maxCitySize: number = 26;
+  private readonly maxCitySize: number = 26;
 
-  readonly maxComplementSize: number = 26;
+  private readonly maxComplementSize: number = 26;
 
-  readonly maxObservationSize: number = 60;
+  private readonly maxObservationSize: number = 60;
 
-  name!: string;
+  // (TODO) Check underlying function
+  private name: nameType;
 
-  name2?: string;
+  private phone?: string;
 
-  phone?: string;
+  public __streetName: string;
 
-  streetName: string;
+  // (OK) checked constructor
+  // (TODO) check underliying function
+  public _streetNumber: number;
 
-  streetNumber!: number;
+  public _neighborhood: string;
 
-  neighborhood: string;
+  public _city: string;
 
-  city: string;
+  // TODO Check constructor
+  // (TODO) Check underlying function
+  private state: number | string;
 
-  state!: number | string;
+  private complement?: string;
 
-  complement?: string;
-
-  observation?: string;
+  private observation?: string;
 
   constructor({
     name,
     phone,
-    streetName,
-    streetNumber,
-    neighborhood,
-    city,
+    __streetName,
+    _streetNumber,
+    _neighborhood,
+    _city,
     state,
     complement,
     observation,
   }: Addresses) {
-    this.changeName(name);
+    // Define name definetively
+    if (isNameArray(name)) this.changeName(`${name[0]} ${name[1]}`);
+    else this.changeName(name);
     if (phone) this.changePhone(phone);
-    this.validateSize(streetName.length, this.maxStreetNameSize, 'Street Name');
-    this.streetName = streetName;
-    this.changeStreetNumber(streetNumber);
+    this.validateSize(__streetName.length, this.maxStreetNameSize, 'Street Name');
+    this.__streetName = __streetName;
+    this.changeStreetNumber(_streetNumber);
     this.validateSize(
-      neighborhood.length,
+      _neighborhood.length,
       this.maxNeighborhoodSize,
       'Neighborhood',
     );
-    this.neighborhood = neighborhood;
-    this.validateSize(city.length, this.maxCitySize, 'City');
-    this.city = city;
+    this._neighborhood = _neighborhood;
+    this.validateSize(_city.length, this.maxCitySize, 'City');
+    this._city = _city;
     this.changeState(state);
     this.validateSize(
       (complement || '').length,
@@ -99,36 +109,43 @@ class Addresses {
   }
 
   private changeName(name: string) {
-    const nameLength = name.length;
-    const errName = 'Name';
-    if (nameLength > this.maxNameSize) {
-      const maxTotalSize = this.maxNameSize * 2 - 1; // name + name + space
-      this.validateSize(nameLength, maxTotalSize, errName);
-      this.name = name.slice(0, this.maxNameSize);
-      this.name2 = name.slice(this.maxNameSize);
-    } else {
-      this.validateSize(nameLength, this.maxNameSize, errName);
-      this.name = name;
-      this.name2 = undefined;
-    }
+    const errMsg = 'Name';
+    const nameArr = name.split(/\s+/);
+    let name1 = nameArr.join(' ');
+    this.validateSize(name1.length, this.maxNameSize * 2, errMsg);
+    if (name1.length <= this.maxNameSize) {
+      this.name = name1;
+      return;
+    } // else
+    let name2 = name1;
+    do {
+      nameArr.pop();
+      name1 = nameArr.join(' ');
+    } while (name1.length > this.maxNameSize);
+    name2 = name2.slice(name1.length + 1);
+    this.validateSize(name1.length, this.maxNameSize * 2, errMsg);
+    this.validateSize(name2.length, this.maxNameSize * 2, errMsg);
+    this.name = [name1, name2];
   }
 
-  public get getName(): string {
-    const name = this.getName;
+  private get varName(): string {
+    const { name } = this;
     if (isNameArray(name)) {
       return `${name[0]} ${name[1]}`;
     } // else
     return name;
   }
 
-  public get getNamesArray(): string | fixedSizeArray<2, string> {
-    if (this.name2) {
-      return [this.name, this.name2];
+  public get _ApiCorreiosName(): nameType {
+    if (isNameArray(this.name)) {
+      if (this.name[1]) {
+        return [this.name[0], this.name[1]];
+      }
     } // else
     return this.name;
   }
 
-  public set setName(name: string) {
+  public set newName(name: string) {
     this.validateSize(name.length, this.maxNameSize, 'Name');
     this.changeName(name);
   }
@@ -148,45 +165,45 @@ class Addresses {
     this.phone = sanitized;
   }
 
-  public set setPhone(phone: string) {
+  public set newPhone(phone: string) {
     this.changePhone(phone);
   }
 
-  public get getPhone(): string {
+  public get varPhone(): string {
     if (this.phone) {
       return this.phone.replace('+', ' ');
     }
     return '';
   }
 
-  public set setStreetName(streetName: string) {
-    this.validateSize(streetName.length, this.maxStreetNameSize, 'Street Name');
-    this.streetName = streetName;
+  public set newStreetName(_streetName: string) {
+    this.validateSize(_streetName.length, this.maxStreetNameSize, 'Street Name');
+    this.__streetName = _streetName;
   }
 
-  private changeStreetNumber(streetNumber: number) {
+  private changeStreetNumber(_streetNumber: number) {
     const it = 'Error: Street number';
-    if (streetNumber > this.maxStreetNumber) {
+    if (_streetNumber > this.maxStreetNumber) {
       throw new Error(`${it} is too big!`);
     }
-    if (streetNumber < 0) {
+    if (_streetNumber < 0) {
       throw new Error(`${it} cannot be negative!`);
     }
-    this.setStreetNumber = streetNumber;
+    this._streetNumber = _streetNumber;
   }
 
-  public set setStreetNumber(streetNumber: number) {
-    this.changeStreetNumber(streetNumber);
+  public set newStreetNumber(_streetNumber: number) {
+    this.changeStreetNumber(_streetNumber);
   }
 
-  public set setNeighborHood(neighborhood: string) {
-    this.validateSize(neighborhood.length, this.maxNeighborhoodSize, 'Neighborhood');
-    this.neighborhood = neighborhood;
+  public set newNeighborHood(_neighborhood: string) {
+    this.validateSize(_neighborhood.length, this.maxNeighborhoodSize, 'Neighborhood');
+    this._neighborhood = _neighborhood;
   }
 
-  public set setCity(city: string) {
-    this.validateSize(city.length, this.maxCitySize, 'City');
-    this.city = city;
+  public set newCity(_city: string) {
+    this.validateSize(_city.length, this.maxCitySize, 'City');
+    this._city = _city;
   }
 
   private stateIntToStr(state:number):string {
@@ -218,20 +235,20 @@ class Addresses {
     this.state = stateIndex;
   }
 
-  public get getState(): string {
+  public get varState(): string {
     if (typeof this.state === 'number') return this.stateIntToStr(this.state);
     return this.state;
   }
 
-  public set setState(state: string) {
+  public set newState(state: string) {
     this.changeState(state);
   }
 
-  public get getComplement(): string {
+  public get varComplement(): string {
     return this.complement || '';
   }
 
-  public set setComplement(complement: string) {
+  public set newComplement(complement: string) {
     this.complement = complement;
     this.validateSize(
       complement.length,
@@ -241,11 +258,11 @@ class Addresses {
     );
   }
 
-  public get getObservation(): string {
+  public get varObservation(): string {
     return this.observation || '';
   }
 
-  public set setObservation(observation: string) {
+  public set newObservation(observation: string) {
     this.validateSize(
       observation.length,
       this.maxObservationSize,
