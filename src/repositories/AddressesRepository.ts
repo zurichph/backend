@@ -7,8 +7,7 @@ interface UpdateAddress extends Addresses {
 
 class AddressesRepository {
   public async create({
-    Name1,
-    Name2,
+    name,
     phone = '',
     streetName,
     streetNumber,
@@ -19,8 +18,7 @@ class AddressesRepository {
     observation = '',
   }: Addresses): Promise<unknown> {
     const values = {
-      Name1,
-      Name2,
+      name,
       phone,
       streetName,
       streetNumber,
@@ -46,8 +44,7 @@ class AddressesRepository {
 
   public async update({
     AddressId,
-    Name1,
-    Name2,
+    name,
     phone,
     streetName,
     streetNumber,
@@ -70,8 +67,7 @@ class AddressesRepository {
         { _id: AddressId },
         {
           $set: {
-            name1: Name1 || addressBeforeUpdate?.toObject().name1,
-            name2: Name2 || addressBeforeUpdate?.toObject().Name2,
+            name: name || addressBeforeUpdate?.toObject().Name,
             phone: phone || addressBeforeUpdate?.toObject().phone,
             streetName:
               streetName || addressBeforeUpdate?.toObject().streetName,

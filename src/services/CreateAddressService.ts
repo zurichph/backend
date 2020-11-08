@@ -10,8 +10,7 @@ class CreateAddressService {
   }
 
   public async execute({
-    Name1,
-    Name2,
+    name,
     phone,
     streetName,
     streetNumber,
@@ -22,7 +21,7 @@ class CreateAddressService {
     observation,
   }: Omit<Addresses, '_id'>): Promise<unknown> {
     if (
-      !Name1
+      !name
       || !phone
       || !streetName
       || !streetNumber
@@ -32,7 +31,6 @@ class CreateAddressService {
     ) {
       throw new Error('Campos obrigatórios faltantes.');
     }
-    let name = `${Name1} ${Name2}`;
     const validated = new AddressValidator({
       name,
       phone,
@@ -44,7 +42,7 @@ class CreateAddressService {
       complement,
       observation,
     });
-    name = validated.getName;
+    name = validated.getName; // eslint-disable-line no-param-reassign
     phone = validated.getPhone; // eslint-disable-line no-param-reassign
     streetName = validated.getStreetName; // eslint-disable-line no-param-reassign
     streetNumber = validated.getStreetNumber; // eslint-disable-line no-param-reassign
@@ -54,15 +52,15 @@ class CreateAddressService {
     state = AddressValidator.stateStrToInt(validated.getState);
     complement = validated.getComplement; // eslint-disable-line no-param-reassign
     observation = validated.getObservation; // eslint-disable-line no-param-reassign
+    let Name1 = '';
+    let Name2 = '';
     if (Array.isArray(name)) {
-      [Name1, Name2] = [name[0], name[1]]; // eslint-disable-line no-param-reassign
+      [Name1, Name2] = [name[0], name[1]];
     } else {
-      Name1 = name; // eslint-disable-line no-param-reassign
-      Name2 = ''; // eslint-disable-line no-param-reassign
+      Name1 = name;
     }
     const user = await this.addressRepository.create({
-      Name1,
-      Name2,
+      name,
       phone,
       streetName,
       streetNumber,
@@ -76,4 +74,4 @@ class CreateAddressService {
   }
 }
 
-export default CreateCostumerService;
+export default CreateAddressService;

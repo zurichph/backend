@@ -4,6 +4,7 @@ import costumersRouter from './costumers.routes';
 import productsRouter from './products.routes';
 import stockRouter from './stock.routes';
 import stockTransactionsRouter from './stock.transactions.routes';
+import TestAddressRouter from './testAddress.routes';
 
 const routes = Router();
 
@@ -12,5 +13,6 @@ routes.use('/costumers', costumersRouter);
 routes.use('/products', productsRouter);
 routes.use('/stock', stockRouter);
 routes.use('/stock/transactions', stockTransactionsRouter);
+routes.use('/', TestAddressRouter);
 
 export default routes;

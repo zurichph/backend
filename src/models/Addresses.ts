@@ -1,7 +1,5 @@
 class Addresses {
-  public Name1: string;
-
-  public Name2: string;
+  public name: string;
 
   public phone: string;
 
@@ -20,8 +18,7 @@ class Addresses {
   public observation?: string;
 
   constructor({
-    Name1,
-    Name2,
+    name,
     phone,
     streetName,
     streetNumber,
@@ -31,8 +28,7 @@ class Addresses {
     complement,
     observation,
   }: Addresses) {
-    this.Name1 = Name1;
-    this.Name2 = Name2;
+    this.name = name;
     this.phone = phone;
     this.streetName = streetName;
     this.streetNumber = streetNumber;

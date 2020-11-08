@@ -2,15 +2,10 @@ import mongoose from 'mongoose';
 import AddressValidator from '../services/ValidateAddresssService';
 
 const AddressSchema = new mongoose.Schema({
-  name1: {
+  name: {
     required: true,
     type: String,
-    maxlength: AddressValidator.maxNameSize,
-  },
-  name2: {
-    required: true,
-    type: String,
-    maxlength: AddressValidator.maxNameSize,
+    maxlength: AddressValidator.maxNameSize * 2,
   },
   phone: {
     required: false,
@@ -51,12 +46,6 @@ const AddressSchema = new mongoose.Schema({
     type: String,
     maxlength: AddressValidator.maxObservationSize,
   },
-});
-
-type Name = {name1: string, name2:string};
-// eslint-disable-next-line func-names
-AddressSchema.virtual('name').get(function (this: Name): string {
-  return `${this.name1} ${this.name2}`;
 });
 
 export default mongoose.model('address', AddressSchema);
