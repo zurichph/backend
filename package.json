@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev:server": "tsnd --transpile-only --ignore-watch node_modules src/server.ts",
-    "lint": "eslint --fix --ext .ts src/ \"src/*\""
+    "lint": "eslint --fix --ext .ts src/ \"src/*\" -c .eslintrc.json"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
