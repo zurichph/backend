@@ -4,17 +4,18 @@ type fixedSizeArray<N extends number, T, M extends string = '0'> = {
 
 type nameArray = fixedSizeArray<2, string>;
 type nameType = string | nameArray;
+type optionalString = string | undefined;
 
 const isNameArray = (x: nameArray): x is nameArray => true;
 
 export interface AddressMember {
-  name?: nameType;
-  phone?: string;
+  name: nameType;
+  phone: string;
   streetName: string;
-  streetNumber?: number;
+  streetNumber: number;
   neighborhood: string;
   city: string;
-  state?: number | string;
+  state: number | string;
   complement?: string;
   observation?: string;
 }
@@ -55,9 +56,9 @@ class AddressValidator {
 
   private state!: number | string;
 
-  private complement?: string;
+  private complement?: optionalString;
 
-  private observation?: string;
+  private observation?: optionalString;
 
   constructor({
     name = '',

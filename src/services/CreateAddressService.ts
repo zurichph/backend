@@ -42,34 +42,28 @@ class CreateAddressService {
       complement,
       observation,
     });
-    name = validated.getName; // eslint-disable-line no-param-reassign
-    phone = validated.getPhone; // eslint-disable-line no-param-reassign
-    streetName = validated.getStreetName; // eslint-disable-line no-param-reassign
-    streetNumber = validated.getStreetNumber; // eslint-disable-line no-param-reassign
-    neighborhood = validated.getNeighborhood; // eslint-disable-line no-param-reassign
-    city = validated.getCity; // eslint-disable-line no-param-reassign
-    // eslint-disable-next-line no-param-reassign
-    state = AddressValidator.stateStrToInt(validated.getState);
-    complement = validated.getComplement; // eslint-disable-line no-param-reassign
-    observation = validated.getObservation; // eslint-disable-line no-param-reassign
-    let Name1 = '';
-    let Name2 = '';
-    if (Array.isArray(name)) {
-      [Name1, Name2] = [name[0], name[1]];
-    } else {
-      Name1 = name;
-    }
-    const user = await this.addressRepository.create({
-      name,
-      phone,
-      streetName,
-      streetNumber,
-      neighborhood,
-      city,
-      state,
-      complement,
-      observation,
-    });
+    const Name = validated.getName;
+    const Phone = validated.getPhone;
+    const StreetName = validated.getStreetName;
+    const StreetNumber = validated.getStreetNumber;
+    const Neighborhood = validated.getNeighborhood;
+    const City = validated.getCity;
+    const State = AddressValidator.stateStrToInt(validated.getState);
+    const Complement = validated.getComplement;
+    const Observation = validated.getObservation;
+
+    const newAddress: Addresses = {
+      name: Name,
+      phone: Phone,
+      streetName: StreetName,
+      streetNumber: StreetNumber,
+      neighborhood: Neighborhood,
+      city: City,
+      state: State,
+      complement: Complement,
+      observation: Observation,
+    };
+    const user = await this.addressRepository.create(newAddress);
     return user;
   }
 }
