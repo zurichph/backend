@@ -1,22 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Costumers from '../models/Costumers';
 import Costumer from '../schemas/Costumer';
+import AddressesRepository from './AddressesRepository';
 
 interface UpdateCostumer {
   clientId: string;
   name: string;
   cpf: string;
-  telefone: string;
 }
 
 class CostumersRepository {
-  public async create({ name, cpf, telefone }: Costumers): Promise<unknown> {
-    const costumer = new Costumers({ name, cpf, telefone });
+  public addressId: string;
 
-    const CostumerExists = await Costumer.findOne({ telefone });
-    if (CostumerExists) {
-      throw new Error('Este telefone já esta sendo utilizado por um outro cliente.');
-    }
+  constructor() {
+    this.addressId = '';
+  }
+
+  public async create({ name, cpf, addressId }: Costumers): Promise<unknown> {
+    const costumer = new Costumers({ name, cpf, addressId });
 
     try {
       return await new Costumer(costumer).save();
@@ -26,21 +27,16 @@ class CostumersRepository {
   }
 
   public async update({
-    clientId, name, cpf, telefone,
+    clientId, name, cpf,
   }: UpdateCostumer): Promise<any> {
-    const TelefoneExists = await Costumer.findOne({ telefone });
-    if (TelefoneExists && TelefoneExists.toObject()._id !== clientId) {
-      throw new Error('Este telefone já esta sendo utilizado por um outro cliente.');
-    }
-
     const costumerBeforeUpdate = await Costumer.findById(clientId);
 
     try {
+      this.addressId = costumerBeforeUpdate?.toObject().addressId;
       return await Costumer.findOneAndUpdate({ _id: clientId }, {
         $set: {
           name: name || costumerBeforeUpdate?.toObject().name,
           cpf: cpf || costumerBeforeUpdate?.toObject().cpf,
-          telefone: telefone || costumerBeforeUpdate?.toObject().telefone,
         },
       }, { new: true });
     } catch (error) {
@@ -49,13 +45,16 @@ class CostumersRepository {
   }
 
   public async delete(id: string): Promise<boolean> {
-    const exists = await Costumer.findById(id);
+    const exists = await Costumer.findById(id).lean();
     if (!exists) {
       throw new Error('Este cliente não existe.');
     }
 
-    await Costumer.deleteOne({ _id: id });
+    const linkedAddress = exists._id;
+    const Address = new AddressesRepository();
 
+    await Costumer.deleteOne({ _id: id });
+    await Address.delete(linkedAddress);
     return true;
   }
 

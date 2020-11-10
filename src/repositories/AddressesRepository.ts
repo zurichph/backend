@@ -1,11 +1,17 @@
 import Addresses from '../models/Addresses';
 import Address from '../schemas/Address';
 
-interface UpdateAddress extends Addresses {
+export interface UpdateAddress extends Addresses {
   AddressId: string;
 }
 
 class AddressesRepository {
+  addressId: string;
+
+  constructor() {
+    this.addressId = '';
+  }
+
   public async create({
     name,
     phone = '',

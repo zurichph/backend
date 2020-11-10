@@ -8,19 +8,15 @@ class CreateCostumerService {
     this.costumersRepository = costumersRepository;
   }
 
-  public async execute({ name, cpf, telefone }: Omit<Costumers, '_id'>): Promise<unknown> {
-    if (name === undefined || telefone === undefined) {
-      throw new Error('Nome e telefone são obrigatórios.');
-    }
-
-    if (telefone.length > 11 || telefone.length < 10) {
-      throw new Error('Telefone inválido.');
+  public async execute({ name, cpf, addressId }: Omit<Costumers, '_id'>): Promise<unknown> {
+    if (name === undefined) {
+      throw new Error('Nome obrigatório.');
     }
 
     const user = await this.costumersRepository.create({
       name,
       cpf,
-      telefone,
+      addressId,
     });
 
     return user;

@@ -5,8 +5,11 @@ import AddressValidator from './ValidateAddresssService';
 class CreateAddressService {
   private addressRepository: AddressesRepository;
 
+  addressId: string;
+
   constructor(addressRepository: AddressesRepository) {
     this.addressRepository = addressRepository;
+    this.addressId = '';
   }
 
   public async execute({
@@ -63,8 +66,9 @@ class CreateAddressService {
       complement: Complement,
       observation: Observation,
     };
-    const user = await this.addressRepository.create(newAddress);
-    return user;
+    const address = await this.addressRepository.create(newAddress);
+    this.addressId = this.addressRepository.addressId;
+    return address;
   }
 }
 
