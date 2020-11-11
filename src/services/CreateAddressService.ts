@@ -30,7 +30,7 @@ class CreateAddressService {
       || !streetNumber
       || !neighborhood
       || !city
-      || state === undefined
+      || typeof state !== 'number'
     ) {
       throw new Error('Campos obrigatórios faltantes.');
     }

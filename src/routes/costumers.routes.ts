@@ -51,7 +51,7 @@ costumersRouter.put('/:id', async (req, res) => {
       cpf,
       name,
     });
-    const { addressId } = costumer;
+    const { addressId } = costumersRepository;
     const newAddress: UpdateAddress = {
       AddressId: addressId,
       name,

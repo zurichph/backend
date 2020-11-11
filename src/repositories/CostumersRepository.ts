@@ -45,12 +45,12 @@ class CostumersRepository {
   }
 
   public async delete(id: string): Promise<boolean> {
-    const exists = await Costumer.findById(id).lean();
+    const exists = await Costumer.findById(id);
     if (!exists) {
       throw new Error('Este cliente não existe.');
     }
 
-    const linkedAddress = exists._id;
+    const linkedAddress = exists.toObject()?.addressId;
     const Address = new AddressesRepository();
 
     await Costumer.deleteOne({ _id: id });

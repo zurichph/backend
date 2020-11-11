@@ -42,7 +42,9 @@ class AddressesRepository {
       );
     }
     try {
-      return await new Address(values).save();
+      const newAddress = await new Address(values).save();
+      this.addressId = newAddress._id;
+      return newAddress;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -61,10 +63,12 @@ class AddressesRepository {
     observation,
   }: UpdateAddress): Promise<unknown> {
     const AddressExists = await Address.findOne({ phone });
-    if (AddressExists && AddressExists.toObject().__id !== AddressId) {
-      throw new Error(
-        'Este telefone já esta sendo utilizado por um outro cliente.',
-      );
+    if (AddressExists) {
+      if (String(AddressExists.toObject()._id) !== String(AddressId)) {
+        throw new Error(
+          'Este telefone já esta sendo utilizado por um outro cliente.',
+        );
+      }
     }
     const addressBeforeUpdate = await Address.findById(AddressId);
 
