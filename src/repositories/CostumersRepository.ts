@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Costumers from '../models/Costumers';
 import Costumer from '../schemas/Costumer';
 import AddressesRepository from './AddressesRepository';
@@ -28,7 +27,7 @@ class CostumersRepository {
 
   public async update({
     clientId, name, cpf,
-  }: UpdateCostumer): Promise<any> {
+  }: UpdateCostumer): Promise<unknown> {
     const costumerBeforeUpdate = await Costumer.findById(clientId);
 
     try {
@@ -58,10 +57,16 @@ class CostumersRepository {
     return true;
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  public async all(page: any): Promise<unknown> {
-    const costumers = await Costumer.find({}).limit(25).skip(page * 25);
-
+  public async all(page: string | number): Promise<unknown> {
+    if (typeof page === 'string') {
+      const costumers = await Costumer.find({})
+        .limit(25)
+        .skip(parseInt(page, 10) * 25);
+      return costumers;
+    }
+    const costumers = await Costumer.find({})
+      .limit(25)
+      .skip(page * 25);
     return costumers;
   }
 }
