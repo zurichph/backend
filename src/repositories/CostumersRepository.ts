@@ -10,7 +10,7 @@ interface UpdateCostumer {
 }
 
 class CostumersRepository {
-  public async create({ name, cpf, telefone }: Costumers): Promise<unknown> {
+  public async create({ name, cpf, telefone }: Costumers): Promise<Costumers> {
     const costumer = new Costumers({ name, cpf, telefone });
 
     const CostumerExists = await Costumer.findOne({ telefone });
@@ -21,7 +21,7 @@ class CostumersRepository {
     }
 
     try {
-      return await new Costumer(costumer).save();
+      return await (await new Costumer(costumer).save()).toObject();
     } catch (error) {
       throw new Error(error.message);
     }
