@@ -1,12 +1,14 @@
+import {Document } from 'mongoose';
 import Stocks from '../models/Stocks';
 import Stock from '../schemas/Stock';
 
 class StockRepository {
-  public async create({ name }: Stocks): Promise<unknown> {
+  public async create({ name }: Stocks): Promise<Stocks> {
     const stock = new Stocks({ name });
 
     try {
-      return await new Stock(stock).save();
+      const newStock = await new Stock(stock).save();
+      return newStock?.toObject();
     } catch (error) {
       throw new Error(error.message);
     }
@@ -24,7 +26,7 @@ class StockRepository {
     return true;
   }
 
-  public async all(): Promise<unknown> {
+  public async all(): Promise<Document[]> {
     const stocks = await Stock.find({});
 
     return stocks;

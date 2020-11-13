@@ -1,3 +1,4 @@
+import {Document} from 'mongoose';
 import Products from '../models/Products';
 import Product from '../schemas/Product';
 
@@ -8,32 +9,34 @@ interface UpdateProduct {
 }
 
 class ProductsRepository {
-  public async all(): Promise<unknown> {
+  public async all(): Promise<Document[]> {
     const products = await Product.find({});
 
     return products;
   }
 
-  public async update({ productId, name, price }: UpdateProduct): Promise<unknown> {
+  public async update({ productId, name, price }: UpdateProduct): Promise<Products> {
     try {
       const productBeforeUpdate = await Product.findById(productId);
 
-      return await Product.findOneAndUpdate({ _id: productId }, {
+      const newProduct = await Product.findOneAndUpdate({ _id: productId }, {
         $set: {
           name: name || productBeforeUpdate?.toObject().name,
           price: price || productBeforeUpdate?.toObject().price,
         },
       }, { new: true });
+      return newProduct?.toObject();
     } catch (error) {
       throw new Error(error.message);
     }
   }
 
-  public async create({ name, price }: Products): Promise<unknown> {
+  public async create({ name, price }: Products): Promise<Products> {
     const product = new Products({ name, price });
 
     try {
-      return await new Product(product).save();
+      const newProduct = await new Product(product).save();
+      return newProduct?.toObject();
     } catch (error) {
       throw new Error(error.message);
     }

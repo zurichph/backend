@@ -31,13 +31,14 @@ interface ProductsInfo {
 class StockTransactionsRepository {
   public async create({
     productId, quantity, type, stockId,
-  }: CreateTransactionDTO): Promise<unknown> {
+  }: CreateTransactionDTO): Promise<StockTransactions> {
     const transaction = new StockTransactions({
       productId, quantity, type, stockId,
     });
 
     try {
-      return await new StockTransaction(transaction).save();
+      const newStockTransactions = await new StockTransaction(transaction).save();
+      return newStockTransactions?.toObject();
     } catch (error) {
       throw new Error(error.message);
     }
