@@ -6,15 +6,10 @@ export interface UpdateAddress extends Addresses {
 }
 
 class AddressesRepository {
-  addressId: string;
-
-  constructor() {
-    this.addressId = '';
-  }
+  public addressId = '';
 
   public async create({
-    name,
-    phone = '',
+    zipCode,
     streetName,
     streetNumber,
     neighborhood,
@@ -24,8 +19,7 @@ class AddressesRepository {
     observation = '',
   }: Addresses): Promise<unknown> {
     const values = {
-      name,
-      phone,
+      zipCode,
       streetName,
       streetNumber,
       neighborhood,
@@ -35,12 +29,6 @@ class AddressesRepository {
       observation,
     };
 
-    const AddressExists = await Address.findOne({ phone });
-    if (AddressExists) {
-      throw new Error(
-        'Este telefone já esta sendo utilizado por um outro cliente.',
-      );
-    }
     try {
       const newAddress = await new Address(values).save();
       this.addressId = newAddress._id;
@@ -52,8 +40,7 @@ class AddressesRepository {
 
   public async update({
     AddressId,
-    name,
-    phone,
+    zipCode,
     streetName,
     streetNumber,
     neighborhood,
@@ -62,14 +49,6 @@ class AddressesRepository {
     complement,
     observation,
   }: UpdateAddress): Promise<unknown> {
-    const AddressExists = await Address.findOne({ phone });
-    if (AddressExists) {
-      if (String(AddressExists.toObject()._id) !== String(AddressId)) {
-        throw new Error(
-          'Este telefone já esta sendo utilizado por um outro cliente.',
-        );
-      }
-    }
     const addressBeforeUpdate = await Address.findById(AddressId);
 
     try {
@@ -77,8 +56,7 @@ class AddressesRepository {
         { _id: AddressId },
         {
           $set: {
-            name: name || addressBeforeUpdate?.toObject().Name,
-            phone: phone || addressBeforeUpdate?.toObject().phone,
+            zipCode: zipCode || addressBeforeUpdate?.toObject().zipCode,
             streetName:
               streetName || addressBeforeUpdate?.toObject().streetName,
             streetNumber:

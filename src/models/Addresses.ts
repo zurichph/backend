@@ -1,7 +1,5 @@
 class Addresses {
-  public name: string;
-
-  public phone: string;
+  public zipCode: string;
 
   public streetName: string;
 
@@ -18,8 +16,7 @@ class Addresses {
   public observation?: string;
 
   constructor({
-    name,
-    phone,
+    zipCode,
     streetName,
     streetNumber,
     neighborhood,
@@ -28,8 +25,7 @@ class Addresses {
     complement,
     observation,
   }: Addresses) {
-    this.name = name;
-    this.phone = phone;
+    this.zipCode = zipCode;
     this.streetName = streetName;
     this.streetNumber = streetNumber;
     this.neighborhood = neighborhood;
