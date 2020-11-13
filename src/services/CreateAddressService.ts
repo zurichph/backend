@@ -1,15 +1,14 @@
 import Addresses from '../models/Addresses';
 import AddressesRepository from '../repositories/AddressesRepository';
 
-class CreateAddressService {
-  private addressRepository: AddressesRepository;
-
+interface addressWithId extends Addresses {
   addressId: string;
+}
 
-  constructor(addressRepository: AddressesRepository) {
-    this.addressRepository = addressRepository;
-    this.addressId = '';
-  }
+class CreateAddressService {
+  private addressRepository = new AddressesRepository();
+
+  addressId = '';
 
   public async execute({
     zipCode,
@@ -20,7 +19,7 @@ class CreateAddressService {
     state,
     complement,
     observation,
-  }: Omit<Addresses, '_id'>): Promise<unknown> {
+  }: Addresses): Promise<addressWithId> {
     if (
       !zipCode
       || !streetName
@@ -32,7 +31,7 @@ class CreateAddressService {
       throw new Error('Campos obrigatórios faltantes.');
     }
 
-    const newAddress: Addresses = {
+    const newAddress = await this.addressRepository.create(<Addresses> {
       zipCode,
       streetName,
       streetNumber,
@@ -41,9 +40,9 @@ class CreateAddressService {
       state,
       complement,
       observation,
-    };
-    const address = await this.addressRepository.create(newAddress);
+    });
     this.addressId = this.addressRepository.addressId;
+    const address: addressWithId = { addressId: this.addressId, ...newAddress };
     return address;
   }
 }

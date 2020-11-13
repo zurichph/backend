@@ -1,3 +1,4 @@
+import { Document } from 'mongoose';
 import Costumers from '../models/Costumers';
 import Costumer from '../schemas/Costumer';
 import AddressesRepository from './AddressesRepository';
@@ -32,7 +33,7 @@ class CostumersRepository {
     name,
     cpf,
     telefone,
-  }: UpdateCostumer): Promise<unknown> {
+  }: UpdateCostumer): Promise<Costumers> {
     const TelefoneExists = await Costumer.findOne({ telefone });
     if (TelefoneExists && TelefoneExists.toObject()._id !== clientId) {
       throw new Error(
@@ -43,7 +44,7 @@ class CostumersRepository {
     const costumerBeforeUpdate = await Costumer.findById(clientId);
 
     try {
-      return await Costumer.findOneAndUpdate(
+      const updatedCostumer = await Costumer.findOneAndUpdate(
         { _id: clientId },
         {
           $set: {
@@ -53,6 +54,22 @@ class CostumersRepository {
           },
         },
         { new: true },
+      );
+      return updatedCostumer?.toObject();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async updateAddress(clientId: string, addressId: string): Promise<void> {
+    try {
+      await Costumer.findOneAndUpdate(
+        { _id: clientId },
+        {
+          $set: {
+            addressId,
+          },
+        },
       );
     } catch (error) {
       throw new Error(error.message);
@@ -76,7 +93,7 @@ class CostumersRepository {
     return true;
   }
 
-  public async all(page: string | number): Promise<unknown> {
+  public async all(page: string | number): Promise<Document[]> {
     if (typeof page === 'string') {
       const costumers = await Costumer.find({})
         .limit(25)

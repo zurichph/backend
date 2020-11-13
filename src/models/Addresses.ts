@@ -9,7 +9,7 @@ class Addresses {
 
   public city: string;
 
-  public state: number;
+  public state: string;
 
   public complement?: string;
 
