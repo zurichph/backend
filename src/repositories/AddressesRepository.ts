@@ -17,7 +17,7 @@ class AddressesRepository {
     state,
     complement = '',
     observation = '',
-  }: Addresses): Promise<unknown> {
+  }: Addresses): Promise<Addresses> {
     const values = {
       zipCode,
       streetName,
@@ -32,10 +32,15 @@ class AddressesRepository {
     try {
       const newAddress = await new Address(values).save();
       this.addressId = newAddress._id;
-      return newAddress;
+      return newAddress.toObject();
     } catch (error) {
       throw new Error(error.message);
     }
+  }
+
+  public async read(AddressId: string): Promise<Addresses> {
+    const fetchedAddress = await Address.findById(AddressId);
+    return fetchedAddress?.toObject();
   }
 
   public async update({
@@ -48,11 +53,11 @@ class AddressesRepository {
     state,
     complement,
     observation,
-  }: UpdateAddress): Promise<unknown> {
+  }: UpdateAddress): Promise<Addresses> {
     const addressBeforeUpdate = await Address.findById(AddressId);
 
     try {
-      return await Address.findOneAndUpdate(
+      const updated = await Address.findOneAndUpdate(
         { _id: AddressId },
         {
           $set: {
@@ -73,6 +78,7 @@ class AddressesRepository {
         },
         { new: true },
       );
+      return updated?.toObject();
     } catch (error) {
       throw new Error(error.message);
     }
