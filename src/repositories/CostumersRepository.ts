@@ -1,22 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Costumers from '../models/Costumers';
 import Costumer from '../schemas/Costumer';
-import AddressesRepository from './AddressesRepository';
 
 interface UpdateCostumer {
   clientId: string;
   name: string;
   cpf: string;
+  telefone: string;
 }
 
 class CostumersRepository {
-  public addressId: string;
+  public async create({ name, cpf, telefone }: Costumers): Promise<unknown> {
+    const costumer = new Costumers({ name, cpf, telefone });
 
-  constructor() {
-    this.addressId = '';
-  }
-
-  public async create({ name, cpf, addressId }: Costumers): Promise<unknown> {
-    const costumer = new Costumers({ name, cpf, addressId });
+    const CostumerExists = await Costumer.findOne({ telefone });
+    if (CostumerExists) {
+      throw new Error('Este telefone já esta sendo utilizado por um outro cliente.');
+    }
 
     try {
       return await new Costumer(costumer).save();
@@ -26,16 +26,21 @@ class CostumersRepository {
   }
 
   public async update({
-    clientId, name, cpf,
-  }: UpdateCostumer): Promise<unknown> {
+    clientId, name, cpf, telefone,
+  }: UpdateCostumer): Promise<any> {
+    const TelefoneExists = await Costumer.findOne({ telefone });
+    if (TelefoneExists && TelefoneExists.toObject()._id !== clientId) {
+      throw new Error('Este telefone já esta sendo utilizado por um outro cliente.');
+    }
+
     const costumerBeforeUpdate = await Costumer.findById(clientId);
 
     try {
-      this.addressId = costumerBeforeUpdate?.toObject().addressId;
       return await Costumer.findOneAndUpdate({ _id: clientId }, {
         $set: {
           name: name || costumerBeforeUpdate?.toObject().name,
           cpf: cpf || costumerBeforeUpdate?.toObject().cpf,
+          telefone: telefone || costumerBeforeUpdate?.toObject().telefone,
         },
       }, { new: true });
     } catch (error) {
@@ -49,24 +54,15 @@ class CostumersRepository {
       throw new Error('Este cliente não existe.');
     }
 
-    const linkedAddress = exists.toObject()?.addressId;
-    const Address = new AddressesRepository();
-
     await Costumer.deleteOne({ _id: id });
-    await Address.delete(linkedAddress);
+
     return true;
   }
 
-  public async all(page: string | number): Promise<unknown> {
-    if (typeof page === 'string') {
-      const costumers = await Costumer.find({})
-        .limit(25)
-        .skip(parseInt(page, 10) * 25);
-      return costumers;
-    }
-    const costumers = await Costumer.find({})
-      .limit(25)
-      .skip(page * 25);
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  public async all(page: any): Promise<unknown> {
+    const costumers = await Costumer.find({}).limit(25).skip(page * 25);
+
     return costumers;
   }
 }

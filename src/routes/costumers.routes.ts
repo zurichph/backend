@@ -1,13 +1,9 @@
 import { Router } from 'express';
 import CostumersRepository from '../repositories/CostumersRepository';
 import CreateCostumerService from '../services/CreateCostumerService';
-import AddressesRepository, { UpdateAddress } from '../repositories/AddressesRepository';
-import CreateAddressService from '../services/CreateAddressService';
-import Addresses from '../models/Addresses';
 
 const costumersRouter = Router();
 const costumersRepository = new CostumersRepository();
-const addressesRepository = new AddressesRepository();
 
 costumersRouter.get('/:page', async (req, res) => {
   const { page } = req.params;
@@ -21,7 +17,6 @@ costumersRouter.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    // This deletes the linked address as well
     await costumersRepository.delete(id);
 
     return res.sendStatus(200);
@@ -33,38 +28,14 @@ costumersRouter.delete('/:id', async (req, res) => {
 costumersRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      cpf,
-      name,
-      phone,
-      streetName,
-      streetNumber,
-      neighborhood,
-      city,
-      state,
-      complement,
-      observation,
-    } = req.body;
+    const { cpf, telefone, name } = req.body;
 
     const costumer = await costumersRepository.update({
       clientId: id,
       cpf,
+      telefone,
       name,
     });
-    const { addressId } = costumersRepository;
-    const newAddress: UpdateAddress = {
-      AddressId: addressId,
-      name,
-      phone,
-      streetName,
-      streetNumber,
-      neighborhood,
-      city,
-      state,
-      complement,
-      observation,
-    };
-    await addressesRepository.update(newAddress);
 
     return res.json({ costumer });
   } catch (error) {
@@ -74,34 +45,14 @@ costumersRouter.put('/:id', async (req, res) => {
 
 costumersRouter.post('/', async (req, res) => {
   try {
-    const {
-      cpf,
-      name,
-      phone,
-      streetName,
-      streetNumber,
-      neighborhood,
-      city,
-      state,
-      complement,
-      observation,
-    } = req.body;
-    const newAddress: Addresses = {
-      name,
-      phone,
-      streetName,
-      streetNumber,
-      neighborhood,
-      city,
-      state,
-      complement,
-      observation,
-    };
-    const addressesService = new CreateAddressService(addressesRepository);
-    await addressesService.execute(newAddress);
-    const { addressId } = addressesService;
+    const { cpf, telefone, name } = req.body;
+
     const costumersService = new CreateCostumerService(costumersRepository);
-    const costumer = await costumersService.execute({ addressId, name, cpf });
+    const costumer = await costumersService.execute({
+      cpf,
+      telefone,
+      name,
+    });
 
     return res.json({ costumer });
   } catch (error) {
