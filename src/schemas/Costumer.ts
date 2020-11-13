@@ -1,15 +1,16 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const CostumerSchema = new mongoose.Schema({
+  addressId: {
+    type: Schema.Types.ObjectId,
+    ref: 'address',
+    required: false,
+  },
   name: {
     type: String,
     required: true,
   },
   cpf: {
-    type: String,
-    required: false,
-  },
-  telefone: {
     type: String,
     required: false,
   },
