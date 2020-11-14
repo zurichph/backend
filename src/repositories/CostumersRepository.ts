@@ -1,4 +1,3 @@
-import { Document } from 'mongoose';
 import Costumers from '../models/Costumers';
 import Costumer from '../schemas/Costumer';
 import AddressesRepository from './AddressesRepository';
@@ -93,17 +92,25 @@ class CostumersRepository {
     return true;
   }
 
-  public async all(page: string | number): Promise<Document[]> {
+  public async all(page: string | number): Promise<Costumers[]> {
     if (typeof page === 'string') {
       const costumers = await Costumer.find({})
         .limit(25)
         .skip(parseInt(page, 10) * 25);
-      return costumers;
-    }
+      const costumersObj: Costumers[] = costumers.map((costumer) => {
+        const c: Costumers = costumer.toObject();
+        return c;
+      });
+      return costumersObj;
+    } // else
     const costumers = await Costumer.find({})
       .limit(25)
       .skip(page * 25);
-    return costumers;
+    const costumersObj: Costumers[] = costumers.map((costumer) => {
+      const c: Costumers = costumer.toObject();
+      return c;
+    });
+    return costumersObj;
   }
 }
 

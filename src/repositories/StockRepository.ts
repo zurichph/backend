@@ -1,4 +1,3 @@
-import {Document } from 'mongoose';
 import Stocks from '../models/Stocks';
 import Stock from '../schemas/Stock';
 
@@ -26,10 +25,13 @@ class StockRepository {
     return true;
   }
 
-  public async all(): Promise<Document[]> {
+  public async all(): Promise<Stocks[]> {
     const stocks = await Stock.find({});
-
-    return stocks;
+    const stocksObj: Stocks[] = stocks.map((stock) => {
+      const s: Stocks = stock.toObject();
+      return s;
+    });
+    return stocksObj;
   }
 }
 

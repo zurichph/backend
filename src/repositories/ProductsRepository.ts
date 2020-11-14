@@ -1,4 +1,3 @@
-import {Document} from 'mongoose';
 import Products from '../models/Products';
 import Product from '../schemas/Product';
 
@@ -9,10 +8,13 @@ interface UpdateProduct {
 }
 
 class ProductsRepository {
-  public async all(): Promise<Document[]> {
+  public async all(): Promise<Products[]> {
     const products = await Product.find({});
-
-    return products;
+    const productsObj: Products[] = products.map((product) => {
+      const p: Products = product.toObject();
+      return p;
+    });
+    return productsObj;
   }
 
   public async update({ productId, name, price }: UpdateProduct): Promise<Products> {
