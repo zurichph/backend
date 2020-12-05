@@ -4,6 +4,7 @@ const CostumerSchema = new mongoose.Schema({
   addressId: {
     type: Schema.Types.ObjectId,
     ref: 'address',
+    required: false,
   },
   name: {
     type: String,

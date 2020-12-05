@@ -3,12 +3,14 @@ class Costumers {
 
   cpf?: string;
 
-  addressId: string;
+  telefone: string;
 
-  constructor({ name, cpf, addressId }: Costumers) {
-    this.addressId = addressId;
+  addressId? = '';
+
+  constructor({ name, cpf, telefone }: Costumers) {
     this.name = name;
     this.cpf = cpf;
+    this.telefone = telefone;
   }
 }
 

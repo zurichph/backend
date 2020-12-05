@@ -1,20 +1,17 @@
 import Addresses from '../models/Addresses';
 import AddressesRepository from '../repositories/AddressesRepository';
-import AddressValidator from './ValidateAddresssService';
+
+interface addressWithId extends Addresses {
+  addressId: string;
+}
 
 class CreateAddressService {
-  private addressRepository: AddressesRepository;
+  private addressRepository = new AddressesRepository();
 
-  addressId: string;
-
-  constructor(addressRepository: AddressesRepository) {
-    this.addressRepository = addressRepository;
-    this.addressId = '';
-  }
+  addressId = '';
 
   public async execute({
-    name,
-    phone,
+    zipCode,
     streetName,
     streetNumber,
     neighborhood,
@@ -22,21 +19,20 @@ class CreateAddressService {
     state,
     complement,
     observation,
-  }: Omit<Addresses, '_id'>): Promise<unknown> {
+  }: Addresses): Promise<addressWithId> {
     if (
-      !name
-      || !phone
+      !zipCode
       || !streetName
       || !streetNumber
       || !neighborhood
       || !city
-      || typeof state !== 'number'
+      || !state
     ) {
       throw new Error('Campos obrigatórios faltantes.');
     }
-    const validated = new AddressValidator({
-      name,
-      phone,
+
+    const newAddress = await this.addressRepository.create(<Addresses> {
+      zipCode,
       streetName,
       streetNumber,
       neighborhood,
@@ -45,29 +41,8 @@ class CreateAddressService {
       complement,
       observation,
     });
-    const Name = validated.getName;
-    const Phone = validated.getPhone;
-    const StreetName = validated.getStreetName;
-    const StreetNumber = validated.getStreetNumber;
-    const Neighborhood = validated.getNeighborhood;
-    const City = validated.getCity;
-    const State = AddressValidator.stateStrToInt(validated.getState);
-    const Complement = validated.getComplement;
-    const Observation = validated.getObservation;
-
-    const newAddress: Addresses = {
-      name: Name,
-      phone: Phone,
-      streetName: StreetName,
-      streetNumber: StreetNumber,
-      neighborhood: Neighborhood,
-      city: City,
-      state: State,
-      complement: Complement,
-      observation: Observation,
-    };
-    const address = await this.addressRepository.create(newAddress);
     this.addressId = this.addressRepository.addressId;
+    const address: addressWithId = { addressId: this.addressId, ...newAddress };
     return address;
   }
 }
