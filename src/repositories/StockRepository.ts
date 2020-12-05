@@ -2,8 +2,8 @@ import Stocks from '../models/Stocks';
 import Stock from '../schemas/Stock';
 
 class StockRepository {
-  public async create({ name }: Stocks): Promise<unknown> {
-    const stock = new Stocks({ name });
+  public async create({ name, address }: Stocks): Promise<unknown> {
+    const stock = new Stocks({ name, address });
 
     try {
       return await new Stock(stock).save();

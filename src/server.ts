@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import options from './config';
 import routes from './routes';
 
@@ -13,6 +14,7 @@ mongoose.connect(dbUrl, {
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(routes);
 

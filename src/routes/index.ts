@@ -2,6 +2,7 @@ import { Router } from 'express';
 import authenticationRouter from './authentication.routes';
 import costumersRouter from './costumers.routes';
 import productsRouter from './products.routes';
+import SalesRouter from './sales.routes';
 import stockRouter from './stock.routes';
 import stockTransactionsRouter from './stock.transactions.routes';
 
@@ -12,5 +13,6 @@ routes.use('/costumers', costumersRouter);
 routes.use('/products', productsRouter);
 routes.use('/stock', stockRouter);
 routes.use('/stock/transactions', stockTransactionsRouter);
+routes.use('/sales', SalesRouter);
 
 export default routes;

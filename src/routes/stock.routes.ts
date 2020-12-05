@@ -6,9 +6,9 @@ const stockRepository = new StockRepository();
 
 stockRouter.post('/', async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, address } = req.body;
 
-    const stock = await stockRepository.create({ name });
+    const stock = await stockRepository.create({ name, address });
 
     return res.json(stock);
   } catch (error) {
