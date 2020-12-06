@@ -51,6 +51,10 @@ class SalesRepository {
     stockId, createdBy, clientId, products, subTotal, shippmentPrice,
     totalPrice, paymentMethod, observations, receipt,
   }: Sales): Promise<Sales> {
+    if (!['CREDIT_CARD', 'BILLET', 'DEPOSIT'].includes(paymentMethod)) {
+      throw new Error('Invalid payment method.');
+    }
+
     const productsRepository = new ProductsRepository();
 
     const removeItemFromStock = async ({

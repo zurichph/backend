@@ -13,7 +13,7 @@ class Sales {
 
   totalPrice: number;
 
-  paymentMethod: string;
+  paymentMethod: 'CREDIT_CARD' | 'BILLET' | 'DEPOSIT';
 
   observations?: string;
 
