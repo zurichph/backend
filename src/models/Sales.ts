@@ -1,9 +1,11 @@
 class Sales {
   stockId: string;
 
+  createdBy: string;
+
   clientId: string;
 
-  products: Record<string, unknown>;
+  products: Array<Record<string, number>>;
 
   subTotal: number;
 
@@ -13,26 +15,24 @@ class Sales {
 
   paymentMethod: string;
 
-  observations: string;
+  observations?: string;
 
   receipt: string;
 
-  cancelled: boolean;
-
   constructor({
-    stockId, clientId, products, subTotal, shippmentPrice,
-    totalPrice, paymentMethod, observations, receipt, cancelled,
+    stockId, createdBy, clientId, products, subTotal, shippmentPrice,
+    totalPrice, paymentMethod, observations, receipt,
   }: Sales) {
     this.stockId = stockId;
+    this.createdBy = createdBy;
     this.clientId = clientId;
     this.products = products;
     this.subTotal = subTotal;
     this.shippmentPrice = shippmentPrice;
     this.totalPrice = totalPrice;
     this.paymentMethod = paymentMethod;
-    this.observations = observations;
+    this.observations = observations || '';
     this.receipt = receipt;
-    this.cancelled = cancelled;
   }
 }
 

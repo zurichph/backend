@@ -84,9 +84,9 @@ class StockTransactionsRepository {
             break;
           case 'outcome':
             if (typeof transaction.quantity === 'number') {
-              accumulator.income += transaction.quantity;
+              accumulator.outcome += transaction.quantity;
             } else if (typeof transaction.quantity === 'string') {
-              accumulator.income += parseInt(transaction.quantity, 10);
+              accumulator.outcome += parseInt(transaction.quantity, 10);
             }
             break;
           default:

@@ -7,14 +7,24 @@ interface UpdateProduct {
   price?: number;
 }
 
+export interface ProductsWithId extends Products {
+  _id: string;
+}
+
 class ProductsRepository {
-  public async all(): Promise<Products[]> {
+  public async all(): Promise<ProductsWithId[]> {
     const products = await Product.find({});
-    const productsObj: Products[] = products.map((product) => {
-      const p: Products = product.toObject();
+    const productsObj: ProductsWithId[] = products.map((product) => {
+      const p: ProductsWithId = product.toObject();
       return p;
     });
     return productsObj;
+  }
+
+  public async getById(id: string): Promise<ProductsWithId> {
+    const products = await Product.findById(id);
+
+    return products?.toObject();
   }
 
   public async update({ productId, name, price }: UpdateProduct): Promise<Products> {

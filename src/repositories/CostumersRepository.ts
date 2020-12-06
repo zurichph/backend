@@ -93,19 +93,16 @@ class CostumersRepository {
   }
 
   public async all(page: string | number): Promise<Costumers[]> {
+    let Page: number;
     if (typeof page === 'string') {
-      const costumers = await Costumer.find({})
-        .limit(25)
-        .skip(parseInt(page, 10) * 25);
-      const costumersObj: Costumers[] = costumers.map((costumer) => {
-        const c: Costumers = costumer.toObject();
-        return c;
-      });
-      return costumersObj;
-    } // else
+      Page = parseInt(page, 10);
+    } else {
+      Page = page;
+    }
+
     const costumers = await Costumer.find({})
       .limit(25)
-      .skip(page * 25);
+      .skip(Page * 25);
     const costumersObj: Costumers[] = costumers.map((costumer) => {
       const c: Costumers = costumer.toObject();
       return c;
