@@ -5,6 +5,8 @@ class Costumers {
 
   telefone: string;
 
+  addressId? = '';
+
   constructor({ name, cpf, telefone }: Costumers) {
     this.name = name;
     this.cpf = cpf;

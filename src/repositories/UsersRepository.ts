@@ -2,6 +2,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Users from '../models/Users';
 import User from '../schemas/User';
+import options from '../config';
+
+const { jwtSecret } = options;
 
 class UsersRepository {
   public async create({ username, password }: Users): Promise<Users> {
@@ -35,7 +38,7 @@ class UsersRepository {
       throw new Error('Verifique o usuário e senha.');
     }
 
-    const token = jwt.sign({ _id: user.toObject()._id }, 'dk@n1#id$un@2$jf@neij$fwj#kf@2k@f@ns', { expiresIn: '6h' });
+    const token = jwt.sign({ _id: user.toObject()._id }, jwtSecret, { expiresIn: '6h' });
 
     return token;
   }

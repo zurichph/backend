@@ -2,11 +2,12 @@ import Stocks from '../models/Stocks';
 import Stock from '../schemas/Stock';
 
 class StockRepository {
-  public async create({ name }: Stocks): Promise<unknown> {
-    const stock = new Stocks({ name });
+  public async create({ name, address }: Stocks): Promise<Stocks> {
+    const stock = new Stocks({ name, address });
 
     try {
-      return await new Stock(stock).save();
+      const newStock = await new Stock(stock).save();
+      return newStock?.toObject();
     } catch (error) {
       throw new Error(error.message);
     }
@@ -24,10 +25,13 @@ class StockRepository {
     return true;
   }
 
-  public async all(): Promise<unknown> {
+  public async all(): Promise<Stocks[]> {
     const stocks = await Stock.find({});
-
-    return stocks;
+    const stocksObj: Stocks[] = stocks.map((stock) => {
+      const s: Stocks = stock.toObject();
+      return s;
+    });
+    return stocksObj;
   }
 }
 

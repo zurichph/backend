@@ -1,8 +1,12 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
+import options from './config';
 import routes from './routes';
 
-mongoose.connect('mongodb+srv://f2kjfnkjas:X1UErDqFywXwThin@zuri.lx3hy.mongodb.net/tests?retryWrites=true&w=majority', {
+const { dbUrl } = options;
+
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
@@ -10,6 +14,7 @@ mongoose.connect('mongodb+srv://f2kjfnkjas:X1UErDqFywXwThin@zuri.lx3hy.mongodb.n
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(routes);
 

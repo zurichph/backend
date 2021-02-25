@@ -5,6 +5,10 @@ const StockSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: Object,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

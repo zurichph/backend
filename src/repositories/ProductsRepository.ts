@@ -7,33 +7,48 @@ interface UpdateProduct {
   price?: number;
 }
 
-class ProductsRepository {
-  public async all(): Promise<unknown> {
-    const products = await Product.find({});
+export interface ProductsWithId extends Products {
+  _id: string;
+}
 
-    return products;
+class ProductsRepository {
+  public async all(): Promise<ProductsWithId[]> {
+    const products = await Product.find({});
+    const productsObj: ProductsWithId[] = products.map((product) => {
+      const p: ProductsWithId = product.toObject();
+      return p;
+    });
+    return productsObj;
   }
 
-  public async update({ productId, name, price }: UpdateProduct): Promise<unknown> {
+  public async getById(id: string): Promise<ProductsWithId> {
+    const products = await Product.findById(id);
+
+    return products?.toObject();
+  }
+
+  public async update({ productId, name, price }: UpdateProduct): Promise<Products> {
     try {
       const productBeforeUpdate = await Product.findById(productId);
 
-      return await Product.findOneAndUpdate({ _id: productId }, {
+      const newProduct = await Product.findOneAndUpdate({ _id: productId }, {
         $set: {
           name: name || productBeforeUpdate?.toObject().name,
           price: price || productBeforeUpdate?.toObject().price,
         },
       }, { new: true });
+      return newProduct?.toObject();
     } catch (error) {
       throw new Error(error.message);
     }
   }
 
-  public async create({ name, price }: Products): Promise<unknown> {
+  public async create({ name, price }: Products): Promise<Products> {
     const product = new Products({ name, price });
 
     try {
-      return await new Product(product).save();
+      const newProduct = await new Product(product).save();
+      return newProduct?.toObject();
     } catch (error) {
       throw new Error(error.message);
     }
